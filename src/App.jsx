@@ -1,26 +1,40 @@
 import { useState } from 'react'
-import {createCounter, increase, decrease, reset} from './models/counter'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { createExercise, generateExerciseSets } from './models/exercise'
 import './App.css'
 
+const initial = createExercise('Chest press', 5 ,5, 50);
+
 function App() {
-  const [count, setCount] = useState(createCounter())
+  const [exercise] = useState(initial)
+  const [sets, setSets] = useState(generateExerciseSets(exercise))
+  /**
+   * @param {number} index 
+   * @returns 
+   */
+  const handleUpdateSet = (index) => () => {
+    const newSets = [...sets]
+
+    if (newSets[index] < exercise.reps) {
+      newSets[index]++
+    } else {
+      newSets[index] = 0
+    }
+
+    setSets(newSets)
+  } 
 
   return (
     <>
-      <h1>Vite + React</h1>
+      <h1>Exercise</h1>
       <div className="card">
-        <p>Counter: {count.value}</p>
-        <button onClick={() => setCount(increase)}>
-          increase
-        </button>
-        <button onClick={() => setCount((count) => decrease(count))}>
-          decrease
-        </button>
-        <button onClick={() => setCount((count) => reset(count))}>
-          reset
-        </button>
+        <p><strong>{exercise.name}:&nbsp;</strong>{exercise.sets}x{exercise.reps}x{exercise.weight}kg</p>
+      </div>
+      <div className='set'>
+        {sets.map((set, index) => (
+          <button key={index} 
+            onClick={handleUpdateSet(index)} 
+            className='set__button'>{set}</button>
+        ))}
       </div>
     </>
   )
